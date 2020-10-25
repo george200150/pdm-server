@@ -1,0 +1,5 @@
+{"_id":1,"name":"petunia","hasFlowers":true,"bloomDate":"12.12.xxxx","location":"{\"N\":0,\"E\":0}","photo":null,"userId":"vI1GMkzBza5i82zj"}
+{"_id":2,"name":"brad","hasFlowers":false,"bloomDate":null,"location":"{\"N\":0,\"E\":0}","photo":null,"userId":"vI1GMkzBza5i82zj"}
+{"_id":3,"name":"panseluta","hasFlowers":true,"bloomDate":"10.10.xxxx","location":"{\"N\":0,\"E\":0}","photo":null,"userId":"vI1GMkzBza5i82zz"}
+{"name":"asd","hasFlowers":false,"bloomDate":"","location":"asd","photo":"asddddd","userId":"vI1GMkzBza5i82zj","_id":"I0Qcx43S6789KxlL"}
+{"name":"ion","hasFlowers":false,"bloomDate":"","location":"ion","photo":"","userId":"vI1GMkzBza5i82zj","_id":"wjfsqPKJa2Kd2aIC"}
