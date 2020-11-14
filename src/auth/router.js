@@ -12,7 +12,7 @@ const createToken = (user) => {
 const createUser = async (user, response) => {
   try {
     await userStore.insert(user);
-    response.body = { token: createToken(user) };
+    response.body = { token: createToken(user), _id: user._id };
     response.status = 201; // created
   } catch (err) {
     response.body = { issue: [{ error: err.message }] };
@@ -23,12 +23,18 @@ const createUser = async (user, response) => {
 router.post('/signup', async (ctx) => await createUser(ctx.request.body, ctx.response));
 
 router.post('/login', async (ctx) => {
+  console.log("inside /login");
   const credentials = ctx.request.body;
   const response = ctx.response;
   const user = await userStore.findOne({ username: credentials.username });
   if (user && credentials.password === user.password) {
-    response.body = { token: createToken(user) };
+    console.log("user: user._id");
+    console.log(user._id);
+    response.body = { token: createToken(user), _id: user._id };
     response.status = 201; // created
+
+    console.log("response.body");
+    console.log(response.body);
   } else {
     response.body = { issue: [{ error: 'Invalid credentials' }] };
     response.status = 400; // bad request
