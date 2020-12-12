@@ -6,18 +6,18 @@ export const router = new Router();
 
 router.get('/', async (ctx) => {
   const response = ctx.response;
-  const userId = ctx.state.user._id;
-  console.log("User:" + userId);
-  response.body = await plantStore.find({ userId }); // get all user's data
+  const username = ctx.state.user.username;
+  console.log("User:" + username);
+  response.body = await plantStore.find({ username }); // get all user's data
   response.status = 200; // ok
 });
 
 router.get('/:id', async (ctx) => {
-  const userId = ctx.state.user._id;
+  const username = ctx.state.user.username;
   const plant = await plantStore.findOne({ _id: ctx.params.id });
   const response = ctx.response;
   if (plant) { // fiecare user va avea plantele lui pe care le va putea vedea
-    if (plant.userId === userId) { // USER IS THE OWNER OF THE PLANT
+    if (plant.username === username) { // USER IS THE OWNER OF THE PLANT
       response.body = plant;
       response.status = 200; // ok
     } else { // CANNOT VISUALISE OTHERS' DATA
@@ -30,11 +30,13 @@ router.get('/:id', async (ctx) => {
 
 const createPlant = async (ctx, plant, response) => {
   try {
-    const userId = ctx.state.user._id;
-    plant.userId = userId;
+    const username = ctx.state.user.username;
+    console.log("everything went ok with username")
+    plant.username = username;
     response.body = await plantStore.insert(plant);
+    console.log("PASSED response.body = await plantStore.insert(plant);")
     response.status = 201; // created
-    broadcast(userId, { type: 'created', payload: plant });
+    broadcast(username, { type: 'created', payload: plant });
   } catch (err) {
     console.log("ERROR: " + err);
     response.body = { message: err.message };
@@ -47,23 +49,23 @@ router.post('/', async ctx => await createPlant(ctx, ctx.request.body, ctx.respo
 router.put('/:id', async (ctx) => {
   const plant = ctx.request.body;
   const id = ctx.params.id;
-  const plantId = plant._id;
+  const cardId = plant._id;
   const response = ctx.response;
-  if (plantId && plantId !== id) { // request went wrong (bad ID match)
+  if (cardId && cardId !== id) {
     response.body = { message: 'Param id and body _id should be the same' };
     response.status = 400; // bad request
     return;
   }
-  if (!plantId) { // if previous "IF" went (!plantId || plantId == id), and the retreived PLANT_ID is NULL, there will be a plant created (SIMILAR TO POST)
+  if (!cardId) {
     await createPlant(ctx, plant, response);
-  } else { // else, (plantId == id), we update the existing plant
-    const userId = ctx.state.user._id;
-    plant.userId = userId;
+  } else {
+    const username = ctx.state.user.username;
+    plant.username = username;
     const updatedCount = await plantStore.update({ _id: id }, plant);
     if (updatedCount === 1) {
       response.body = plant;
       response.status = 200; // ok
-      broadcast(userId, { type: 'updated', payload: plant });
+      broadcast(username, { type: 'updated', payload: plant });
     } else {
       response.body = { message: 'Resource no longer exists' };
       response.status = 405; // method not allowed
@@ -72,9 +74,9 @@ router.put('/:id', async (ctx) => {
 });
 
 router.del('/:id', async (ctx) => {
-  const userId = ctx.state.user._id;
+  const username = ctx.state.user.username;
   const plant = await plantStore.findOne({ _id: ctx.params.id });
-  if (plant && userId !== plant.userId) { // WRONG OWNER OF THE PLANT (no permission to delete others' plants)
+  if (plant && username !== plant.username) { // WRONG OWNER OF THE PLANT (no permission to delete others' plants)
     ctx.response.status = 403; // forbidden
   } else {
     await plantStore.remove({ _id: ctx.params.id });

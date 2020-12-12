@@ -8,6 +8,10 @@ export const initWss = value => {
   wss = value;
   wss.on('connection', ws => {
     ws.on('message', message => {
+
+      console.log("console.log(message);");
+      console.log(message);
+
       const { type, payload: { token } } = JSON.parse(message);
       if (type !== 'authorization') {
         ws.close();

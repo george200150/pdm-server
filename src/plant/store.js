@@ -14,6 +14,9 @@ export class PlantStore {
   }
   
   async insert(plant) {
+    if (plant._id === ""){
+      plant._id = Math.random().toString();
+    }
     let plantName = plant.name;
     if (!plantName) { // validation
       throw new Error('Missing name property')
